@@ -14,11 +14,15 @@ For each cell lines, Hypoxia vs Normoxia was compared to identify genes that res
    identifiers.
    Therefore, each .sra file must be converted into .**fastq** (or better, .**fastq.gz** for compression).
 
-   ```# Downloading sra
-        sudo apt install sra-toolkit
-        prefetch SRR7179504
-      # Converting to FASTQ
-       fastq-dump --outdir fastq --gzip --skip-technical --readids --read-filter pass --dumpbase --split-3 --clip SRR7179504.sra
+  ```bash
+sudo apt install sra-toolkit
+prefetch SRR7179504
+
+# Converting to fastq
+fastq-dump --outdir fastq --gzip --skip-technical --readids \
+--read-filter pass --dumpbase --split-3 --clip SRR7179504.sra
+```
+
 
 
    
