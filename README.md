@@ -101,6 +101,8 @@ Running FastQC ensures that the data is suitable for mapping and downstream diff
  # Run FastQC
  fastqc fastq/*.fastq.gz -o fastqc_results/ --threads 8
 ```
+<img width="1919" height="969" alt="Screenshot 2025-11-22 220153" src="https://github.com/user-attachments/assets/b568894f-75b6-4448-b942-458da3fc3204" />
+
 
 
 
