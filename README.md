@@ -107,7 +107,18 @@ Running FastQC ensures that the data is suitable for mapping and downstream diff
  **_Quality checking FastQC for a single sequence_**
 <img width="1919" height="900" alt="image" src="https://github.com/user-attachments/assets/483e03b0-968f-4321-bc5f-8046e824cd67" />
 
-# IV. 
+**Running MultiQC:**
+MultiQC aggregates all individual FastQC reports into a single unified report, making it easier to compare quality metrics across multiple samples in one place.
+This helps quickly identify sample-specific issues, batch effects, or global sequencing problems without opening dozens of separate HTML files.
+```bash
+# Aggregate with MultiQC
+multiqc fastqc_results/ -o multiqc_report/
+```
+_**Output: MultiQC report**_
+<img width="1911" height="894" alt="image" src="https://github.com/user-attachments/assets/590461b1-9833-4aca-a04f-e92f46fe89c0" />
+
+
+
 
 
 
