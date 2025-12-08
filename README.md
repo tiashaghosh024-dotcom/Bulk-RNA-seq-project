@@ -22,7 +22,7 @@ prefetch SRR7179504
 fastq-dump --outdir fastq --gzip --skip-technical --readids \
 --read-filter pass --dumpbase --split-3 --clip SRR7179504.sra
 ```
-**Output: FASTQ files (raw sequencing reads)**
+**_Output: FASTQ files (raw sequencing reads_)**
 ```bash
 tiasha@Tiasha:~/bulk_rnaseq_work$ ls sra_files
 
@@ -101,10 +101,10 @@ Running FastQC ensures that the data is suitable for mapping and downstream diff
  # Run FastQC
  fastqc fastq/*.fastq.gz -o fastqc_results/ --threads 8
 ```
-# Output: HTML reports showing sequencing quality 
+**_Output: HTML reports showing sequencing quality _**
 <img width="1919" height="250" alt="Screenshot 2025-11-22 220153" src="https://github.com/user-attachments/assets/320f8bee-9141-43dd-98f7-f2814ee458fb" />
 
-# Quality checking FastQC for a single sequence
+ **_Quality checking FastQC for a single sequence_**
 <img width="1919" height="900" alt="image" src="https://github.com/user-attachments/assets/483e03b0-968f-4321-bc5f-8046e824cd67" />
 
 # IV. 
