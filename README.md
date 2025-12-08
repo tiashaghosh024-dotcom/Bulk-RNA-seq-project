@@ -33,6 +33,80 @@ SRR7179524.sra   SRR7179525.sra   SRR7179526.sra
 SRR7179527.sra   SRR7179536.sra   SRR7179537.sra
 SRR7179540.sra   SRR7179541.sra
 ```
+Also, FASTQ files are extremely large, so compressing them with --gzip reduces storage space without affecting read quality or downstream analysis.
+
+# II. Automated SRA downloading and FASTQ generation:
+Processing many RNA-seq samples manually can be slow, repetitive, and error-prone.
+To make the workflow reproducible and efficient, a Python automation script was used to:
+
+1. Download all SRA files automatically (prefetch)
+2. Convert each .sra file into compressed FASTQ format (fastq-dump --gzip)
+3. Record how long each step took
+This automation ensures consistent processing, prevents typos in SRR IDs and saves a significant amount of manual effort when working with many samples.
+```bash
+import subprocess
+import time
+
+sra_numbers = [
+    "SRR7179504", "SRR7179505", "SRR7179506", "SRR7179507",
+    "SRR7179508", "SRR7179509", "SRR7179510", "SRR7179511",
+    "SRR7179520", "SRR7179521", "SRR7179522", "SRR7179523",
+    "SRR7179524", "SRR7179525", "SRR7179526", "SRR7179527",
+    "SRR7179536", "SRR7179537", "SRR7179540", "SRR7179541"
+]
+
+# Download all SRA files
+for sra_id in sra_numbers:
+    print("\n=== Downloading:", sra_id, "===")
+    prefetch_cmd = f"prefetch {sra_id}"
+    print("Command:", prefetch_cmd)
+
+    start_time = time.time()
+    subprocess.call(prefetch_cmd, shell=True)
+    end_time = time.time()
+
+    elapsed_min = (end_time - start_time) / 60
+    print(f"⏱ Download time for {sra_id}: {elapsed_min:.2f} minutes")
+
+# Convert all SRA files to FASTQ
+for sra_id in sra_numbers:
+    sra_path = f"/{sra_id}/{sra_id}.sra"
+    print("\n=== Generating FASTQ for:", sra_id, "===")
+    fastq_dump_cmd = (
+        f"fastq-dump --outdir fastq --gzip --skip-technical "
+        f"--readids --read-filter pass --dumpbase --split-3 --clip {sra_path}"
+    )
+    print("Command:", fastq_dump_cmd)
+
+    start_time = time.time()
+    subprocess.call(fastq_dump_cmd, shell=True)
+    end_time = time.time()
+
+    elapsed_min = (end_time - start_time) / 60
+    print(f"⏱ FASTQ generation time for {sra_id}: {elapsed_min:.2f} minutes")
+```
+
+# III. Quality Control Using FastQC
+
+Once FASTQ files were generated, quality assessment was performed using FastQC.
+Quality control is essential before alignment because it allows detection of:
+1.Poor-quality reads
+2.Adapter contamination
+3.Over-represented sequences
+4.GC content deviations
+5.Per-base quality drops
+
+Running FastQC ensures that the data is suitable for mapping and downstream differential expression analysis.
+```bash
+ # Run FastQC
+ fastqc fastq/*.fastq.gz -o fastqc_results/ --threads 8
+```
+
+
+
+
+
+
 
 
 
