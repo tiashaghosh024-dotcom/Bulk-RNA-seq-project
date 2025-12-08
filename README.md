@@ -104,7 +104,10 @@ Running FastQC ensures that the data is suitable for mapping and downstream diff
 # Output: HTML reports showing sequencing quality 
 <img width="1919" height="250" alt="Screenshot 2025-11-22 220153" src="https://github.com/user-attachments/assets/320f8bee-9141-43dd-98f7-f2814ee458fb" />
 # Quality checking FastQC for a single sequence
-<img width="1919" height="1032" alt="image" src="https://github.com/user-attachments/assets/4135ec12-5482-439a-b60c-bc4573e39182" />
+<img width="1919" height="900" alt="image" src="https://github.com/user-attachments/assets/483e03b0-968f-4321-bc5f-8046e824cd67" />
+
+# IV. 
+
 
 
 
