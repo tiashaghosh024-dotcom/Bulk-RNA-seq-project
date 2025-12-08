@@ -5,6 +5,11 @@ This project aims to show a complete Bulk RNA-Seq workflow- from raw sequencing 
 
 For each cell lines, Hypoxia vs Normoxia was compared to identify genes that responded to low O2 levels. 
 
+# Data Sourcing : 
+# 1. Download raw sequencing data (.sra files) using SRA toolkit.
+   Raw RNA-seq datasets submitted to the NCBI Sequence Read Archive are stored in a compressed binary format called .sra.
+   To begin any bulk RNA-seq workflow, the first step is obtaining these files from SRA using tools such as ```prefetch```.
+
 
 
 
