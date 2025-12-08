@@ -12,7 +12,7 @@ For each cell lines, Hypoxia vs Normoxia was compared to identify genes that res
 # 2. Convert .sra → .fastq.gz using fastq-dump (or fasterq-dump)
     The .sra format is not directly usable by downstream RNA-seq tools such as FastQC or HISAT2.These tools require reads in FASTQ format, which contains: nucleotide sequences, per-base quality scores,
    identifiers.
-   Therefore, each ```.sra``` file must be converted into .**fastq** (or better, .**fastq.gz** for compression).
+   Therefore, each .sra file must be converted into .**fastq** (or better, .**fastq.gz** for compression).
 
 ```# Downloading SRA
 prefetch SRR7179504
