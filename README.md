@@ -144,9 +144,37 @@ mv SRR7179541_pass.fastq.gz PC3_Hypoxia_S2.fastq.gz
 ```
 The individual SRA runs are'nt required anymore, so we can remove them all using the command ```rm SRR*```, which removes all the files in the folder that begin with “SRR". Now, the folder contains a total of 8 FASTQ files: 4 for LNCaP and 4 for PC3.
 
-**_**Output:8 final FASTQ files **___**
+_**Output:8 final FASTQ files**_
 <img width="1897" height="119" alt="image" src="https://github.com/user-attachments/assets/157eec6d-a92d-4b87-9415-322ae414c3f5" />
 
+# VI. Genome Reference and Annotation :
+Retrieve the HISAT2-ready GRCh38 index:
+```bash
+wget https://genome-idx.s3.amazonaws.com/hisat/grch38_genome.tar.gz
+tar -xvzf grch38_genome.tar.gz
+```
+Download Ensembl GTF annotation:
+```bash
+wget https://ftp.ensembl.org/pub/release-114/gtf/homo_sapiens/Homo_sapiens.GRCh38.114.gtf.gz
+gunzip Homo_sapiens.GRCh38.113.gtf.gz
+```
+
+# VII. Installation of HISAT2 and Alignment (HISAT2 → Samtools):
+ Align the reads and convert to sorted & indexed BAM:
+ ```bash
+sudo apt install hisat2
+sudo apt install samtools
+```
+```hisat2 -q -x grch38/genome -U fastq/LNCAP_Hypoxia_S1.fastq.gz | \
+  samtools sort -o alignedreads/LNCAP_Hypoxia_S1.bam
+
+samtools index alignedreads/LNCAP_Hypoxia_S1.bam
+```
+_**Output: Aligned, sorted, and indexed bam files**_
+<img width="1912" height="489" alt="image" src="https://github.com/user-attachments/assets/6905edda-2d51-43cc-99b5-2a7f4c9e7044" />
+
+ 
+
 
 
 
@@ -166,6 +194,8 @@ The individual SRA runs are'nt required anymore, so we can remove them all using
 
    
    
+
+
 
 
 
