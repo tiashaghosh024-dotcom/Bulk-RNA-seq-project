@@ -22,6 +22,17 @@ prefetch SRR7179504
 fastq-dump --outdir fastq --gzip --skip-technical --readids \
 --read-filter pass --dumpbase --split-3 --clip SRR7179504.sra
 ```
+```bash
+tiasha@Tiasha:~/bulk_rnaseq_work$ ls sra_files
+
+SRR7179504.sra   SRR7179505.sra   SRR7179506.sra   SRR7179507.sra
+SRR7179508.sra   SRR7179509.sra   SRR7179510.sra   SRR7179511.sra
+SRR7179520.sra   SRR7179521.sra   SRR7179522.sra   SRR7179523.sra
+SRR7179524.sra   SRR7179525.sra   SRR7179526.sra
+SRR7179527.sra   SRR7179536.sra   SRR7179537.sra
+SRR7179540.sra   SRR7179541.sra
+```
+
 
 
 
