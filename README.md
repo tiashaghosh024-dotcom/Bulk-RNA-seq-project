@@ -164,9 +164,9 @@ gunzip Homo_sapiens.GRCh38.113.gtf.gz
  ```bash
 sudo apt install hisat2
 sudo apt install samtools
-```
-```hisat2 -q -x grch38/genome -U fastq/LNCAP_Hypoxia_S1.fastq.gz | \
-  samtools sort -o alignedreads/LNCAP_Hypoxia_S1.bam
+
+ hisat2 -q -x grch38/genome -U fastq/LNCAP_Hypoxia_S1.fastq.gz | \
+ samtools sort -o alignedreads/LNCAP_Hypoxia_S1.bam
 
 samtools index alignedreads/LNCAP_Hypoxia_S1.bam
 ```
