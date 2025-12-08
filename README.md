@@ -117,6 +117,38 @@ multiqc fastqc_results/ -o multiqc_report/
 _**Output: MultiQC report**_
 <img width="1911" height="894" alt="image" src="https://github.com/user-attachments/assets/590461b1-9833-4aca-a04f-e92f46fe89c0" />
 
+# IV. Read Trimming (Optional)
+Helps in removing low-quality bases, sequencing adapters, or technical artifacts from raw reads, improving alignment accuracy and downstream gene-expression quantification. Although not always required, trimming can help when FastQC shows adapter contamination or poor quality at read ends.
+```# Trimming low-quality bases using Trimmomatic (Single-End)
+java -jar Trimmomatic-0.39/trimmomatic-0.39.jar SE \
+  -threads 4 \
+  fastq/SRR7179504.fastq.gz \
+  fastq/SRR7179504_trimmed.fastq.gz \
+  TRAILING:10 \
+  -phred33
+```
+# V. Combine Technical Replicates: concatenating FastQ files 
+ Each LNCaP sample had four separate SRA runs, so running the file_name.py script produced four FASTQ files per sample. To get one final FASTQ file for each sample, we simply concatenate the four files using the cat command. 
+```bash
+cat SRR7179504_pass.fastq.gz SRR7179505_pass.fastq.gz SRR7179506_pass.fastq.gz SRR7179507_pass.fastq.gz  > LNCAP_Normoxia_S1.fastq.gz
+cat SRR7179508_pass.fastq.gz SRR7179509_pass.fastq.gz SRR7179510_pass.fastq.gz SRR7179511_pass.fastq.gz  > LNCAP_Normoxia_S2.fastq.gz
+cat SRR7179520_pass.fastq.gz SRR7179521_pass.fastq.gz SRR7179522_pass.fastq.gz SRR7179523_pass.fastq.gz  > LNCAP_Hypoxia_S1.fastq.gz
+cat SRR7179524_pass.fastq.gz SRR7179525_pass.fastq.gz SRR7179526_pass.fastq.gz SRR7179527_pass.fastq.gz  > LNCAP_Hypoxia_S2.fastq.gz
+```
+For the PC3 samples, each one has only a single FASTQ file. So instead of merging, we rename the files from their SRR IDs to their actual sample names using the `mv` command.
+```bash
+mv SRR7179536_pass.fastq.gz PC3_Normoxia_S1.fastq.gz
+mv SRR7179537_pass.fastq.gz PC3_Normoxia_S2.fastq.gz
+mv SRR7179540_pass.fastq.gz PC3_Hypoxia_S1.fastq.gz
+mv SRR7179541_pass.fastq.gz PC3_Hypoxia_S2.fastq.gz
+```
+The individual SRA runs are'nt required anymore, so we can remove them all using the command ```rm SRR*```, which removes all the files in the folder that begin with “SRR". Now, the folder contains a total of 8 FASTQ files: 4 for LNCaP and 4 for PC3.
+
+**_**Output:8 final FASTQ files **___**
+<img width="1897" height="119" alt="image" src="https://github.com/user-attachments/assets/157eec6d-a92d-4b87-9415-322ae414c3f5" />
+
+
+
 
 
 
