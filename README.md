@@ -17,10 +17,10 @@ The .sra format is not directly usable by downstream RNA-seq tools such as FastQ
 ```# Downloading SRA
 prefetch SRR7179504
 
-# Converting to FASTQ
-fastq-dump --outdir fastq --gzip --skip-technical --readids \
---read-filter pass --dumpbase --split-3 --clip SRR7179504/SRR7179504.sra
-Output : The FASTQ files- raw sequences (.sra files ) were created in the working directory.
+ # Converting to FASTQ
+ fastq-dump --outdir fastq --gzip --skip-technical --readids \
+ --read-filter pass --dumpbase --split-3 --clip SRR7179504/SRR7179504.sra
+  Output : The FASTQ files- raw sequences (.sra files ) were created in the working directory.```
 
 ```tiasha@Tiasha:~/bulk_rnaseq_work/sra_files$ls
 
