@@ -387,10 +387,10 @@ dim(raw_counts)
 <img width="1912" height="1031" alt="image" src="https://github.com/user-attachments/assets/0cc5c157-4e48-4f8c-b437-fe01cff9a139" />
 
 For sorting :
-```raw_counts <- raw_counts[, sort(colnames(raw_counts))]
-```
+```raw_counts <- raw_counts[, sort(colnames(raw_counts))]```
 
-Thw sorted order will be: LNCAP_Hypoxia_S1
+Thw sorted order will be:
+LNCAP_Hypoxia_S1
 LNCAP_Hypoxia_S2
 LNCAP_Normoxia_S1
 LNCAP_Normoxia_S2
