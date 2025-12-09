@@ -222,7 +222,7 @@ _**Output: Aligned, sorted, and indexed bam and bai files**_
 <img width="1912" height="489" alt="image" src="https://github.com/user-attachments/assets/6905edda-2d51-43cc-99b5-2a7f4c9e7044" />
 
 
-# VIII. Quantifiaction:
+# VIII. Quantification:
 This is for creating the gene expression count matrix.
 ```bash
 featureCounts -S 2 \
@@ -238,13 +238,11 @@ For all samples to be quantified:
 ```bash
 #!/bin/bash
 
-# Go to your aligned reads folder (where all .bam files are stored)
 cd /home/tiasha/bulk_rnaseq_work
 
 # Loop over all BAM files except temporary ones
 for bam in *.bam; do
 
-    # Skip any tmp.*.bam files (just in case)
     if [[ "$bam" == *.tmp.*.bam ]]; then
         continue
     fi
@@ -270,6 +268,59 @@ Saved this in nano count_all.sh, made it executable and ran the script.
 
 _**Output: Each ~50 MB, and a small .summary file for each.**_
 <img width="1916" height="493" alt="image" src="https://github.com/user-attachments/assets/159a3c5e-abcd-4e54-93eb-4058fe0e1f3e" />
+
+# IX. Creating count matrix:
+It merges all 8 individual featureCounts result files into ONE big count matrix (genes × samples).
+This final matrix will be used for:
+1) Differential expression analysis (DESeq2)
+2) Heatmaps
+3) PCA plots
+4) Volcano plots
+
+This will merge files like the ones in the output of the picture above, into one .csv file and this matrix is what DESeq2 will see.
+```bash
+#!/usr/bin/env python
+# coding: utf-8
+
+import os
+import glob
+import pandas as pd
+import time
+
+path = "/home/tiasha/bulk_rnaseq_work/quants"
+
+files = glob.glob(os.path.join(path, "*.txt"))
+
+print("Files found:", files)
+
+all_counts = []
+
+for file in files:
+    start_time = time.time()
+    df = pd.read_csv(file, sep="\t", comment="#")
+    
+    sample_name = os.path.basename(file).replace("_featurecounts.txt", "")
+    df = df[["Geneid", df.columns[-1]]]
+    df.rename(columns={df.columns[-1]: sample_name}, inplace=True)
+    
+    all_counts.append(df)
+    
+    elapsed = (time.time() - start_time) / 60  # minutes
+    print(f"Completed {sample_name} | Rows: {df.shape[0]} | Time: {elapsed:.2f} min")
+
+counts_matrix = all_counts[0]
+for df in all_counts[1:]:
+    counts_matrix = counts_matrix.merge(df, on="Geneid", how="outer")
+
+output_file = os.path.join(path, "GSE106305_counts_matrix_3011.csv")
+counts_matrix.to_csv(output_file, index=False)
+
+print("\nAll files processed!")
+print("Merged matrix shape:", counts_matrix.shape)
+print("Saved to:", output_file)
+```
+
+
 
 
 
