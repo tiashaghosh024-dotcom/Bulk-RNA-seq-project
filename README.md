@@ -327,7 +327,6 @@ print("Saved to:", output_file)
    Installation:
 
   ```
-r
 install.packages(c("data.table","dplyr","tibble","ggplot2","forcats","RColorBrewer","pheatmap","ggrepel","stringr"))
 
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -339,7 +338,6 @@ Set working directory inside R.
 Load the data and packages:
 
 ```
-r
 setwd("~/projects/GSE106305")   # <- changed to my path
 
 library(DESeq2)
@@ -351,7 +349,6 @@ library(ggrepel)
 
 **2. Verification and reading counts file:**
 ```
-r
 # Read counts
 raw_counts <- read.csv("GSE106305_counts_matrix_3011.csv", header = TRUE, stringsAsFactors = FALSE)
 
@@ -380,7 +377,6 @@ _**Output:**_
 
 **3. reloading CSV with proper row names and sorting columnns:**
 ```
-r
  raw_counts <- read.csv("GSE106305_counts_matrix_3011.csv",
  header = TRUE,
  row.names = "Geneid",
@@ -411,7 +407,6 @@ __**4. Check column sums:**__
 
 __**5. Creating metadata (colData)**__
 ```
-r
   condition <- c(
   rep("LNCAP_Hypoxia", 2),
   rep("LNCAP_Normoxia", 2),
@@ -449,7 +444,6 @@ Extracting the first differential expression results:
 _i.Extracting results for LNCAP Normoxia vs LNCAP Hypoxia:_
 
 ```
-r
 res_LNCAP <- results(dds, contrast = c("condition", "LNCAP_Normoxia", "LNCAP_Hypoxia"))
 head(res_LNCAP)
 summary(res_LNCAP)
@@ -486,7 +480,6 @@ This shows the top most significant genes.
 
 Saving DE results to a csv file:
 ```
-r
 write.csv(as.data.frame(res_LNCAP_ordered),
           file = "LNCAP_Normoxia_vs_Hypoxia_DEGs.csv")
 ```
