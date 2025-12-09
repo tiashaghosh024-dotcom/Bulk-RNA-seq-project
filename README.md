@@ -350,7 +350,7 @@ library(ggrepel)
 **2. Verification and reading counts file:**
 ```
 # Read counts
-raw_counts <- read.csv("GSE106305_counts_matrix.csv", header = TRUE, stringsAsFactors = FALSE)
+raw_counts <- read.csv("GSE106305_counts_matrix_3011.csv", header = TRUE, stringsAsFactors = FALSE)
 
 # Check first columns & rownames
 head(raw_counts)
