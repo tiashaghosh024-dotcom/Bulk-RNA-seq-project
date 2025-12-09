@@ -654,6 +654,242 @@ plotEnrichment(
   ggtitle(paste("Leading Edge Plot for:", top_pathway))
 dev.off()
 ```
+**12. MA Plot for LNCAP contrast:**
+```
+png("MAplot_LNCAP.png", width=2000, height=1600, res=300)
+plotMA(res_LNCAP, ylim=c(-5,5), cex=0.6)
+dev.off()
+```
+**13. Heatmap of Top 30 Genes With Highest Absolute LFC:**
+```
+# Order by absolute log2FC
+top_genes_LFC <- rownames(res_LNCAP_ordered)[order(abs(res_LNCAP_ordered$log2FoldChange), decreasing = TRUE)][1:30]
+```
+```
+mat <- assay(vsd)[top_genes_LFC, ]
+mat <- mat - rowMeans(mat)   # standard scaling
+```
+```
+library(pheatmap)
+
+png("Top30_LFC_heatmap.png", width=2000, height=1600, res=300)
+pheatmap(
+    mat,
+    annotation_col = as.data.frame(colData(dds)["condition"]),
+    fontsize_row = 6,
+    scale = "row",
+    clustering_distance_rows = "euclidean",
+    clustering_distance_cols = "euclidean"
+)
+dev.off()
+```
+**14. Creating boxplots:**
+```
+# extract normalized counts
+df_counts <- plotCounts(dds, gene = gene_id, returnData = TRUE)
+
+library(ggplot2)
+
+png("boxplot_IGFBP1_ggplot.png", width=1600, height=1200, res=300)
+
+ggplot(df_counts, aes(x = condition, y = count, fill = condition)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.2, size = 3, alpha = 0.7) +
+  theme_bw(base_size = 18) +
+  ggtitle(paste("Expression of", "IGFBP1")) +
+  ylab("Normalized counts")
+
+dev.off()
+```
+15. Heatmap — Top 30 Most Variable Genes
+    -used on mostly all RNA-seq QC pipelines
+```
+# variance for each gene
+gene_variances <- apply(assay(vsd), 1, var)
+
+# Select top 30 most variable genes
+top30 <- names(sort(gene_variances, decreasing = TRUE))[1:30]
+
+mat_topvar <- assay(vsd)[top30, ]
+mat_topvar <- mat_topvar - rowMeans(mat_topvar)  # center rows
+
+annotation_col <- data.frame(Condition = vsd$condition)
+rownames(annotation_col) <- colnames(mat_topvar)
+
+png("top30_variable_genes_heatmap.png", width=2000, height=1600, res=300)
+pheatmap(mat_topvar,
+         annotation_col = annotation_col,
+         scale = "row",
+         show_rownames = TRUE,
+         fontsize_row = 8,
+         fontsize_col = 10,
+         main = "Top 30 Most Variable Genes")
+dev.off()
+```
+Heatmap for Top 30 DE Genes (LFC-based):
+```
+# Clean DE results
+res_clean <- res_lncap[!is.na(res_lncap$log2FoldChange), ]
+res_clean <- res_clean[order(abs(res_clean$log2FoldChange), decreasing = TRUE), ]
+
+# Top 30 DE genes
+top_genes_LFC <- rownames(res_clean)[1:30]
+
+# Extract only genes present in VSD matrix
+top_genes_LFC <- top_genes_LFC[top_genes_LFC %in% rownames(vsd)]
+
+mat_lfc <- assay(vsd)[top_genes_LFC, ]
+mat_lfc <- mat_lfc - rowMeans(mat_lfc)
+
+annotation_col <- data.frame(Condition = vsd$condition)
+rownames(annotation_col) <- colnames(mat_lfc)
+
+png("top30_DE_genes_heatmap.png", width=2000, height=1600, res=300)
+pheatmap(mat_lfc,
+         annotation_col = annotation_col,
+         scale = "row",
+         fontsize_row = 8,
+         fontsize_col = 10,
+         main = "Top 30 DE Genes by |LFC|")
+dev.off()
+```
+**16. Zero count distribution table:**
+Counts per gene = how many samples have zero counts. Saves a small summary table.
+```
+# Zero-count distribution
+counts_mat <- as.matrix(assay(dds))   # or raw count matrix you used
+zero_counts <- rowSums(counts_mat == 0)
+zc_table <- as.data.frame(table(zero_counts))
+colnames(zc_table) <- c("zeros_in_samples", "gene_count")
+write.csv(zc_table, "zero_count_distribution.csv", row.names = FALSE)
+
+summary(zero_counts)
+```
+**17. QC figure: Density plots raw vst**
+```
+# ---- Raw vs VST Density Plots (Grid View) ----
+
+library(ggplot2)
+library(gridExtra)
+
+# Convert raw counts to data frame for density plotting
+raw_df <- as.data.frame(assay(dds)[, ])
+vst_df <- as.data.frame(assay(vsd)[, ])
+
+# Function to create density plots for raw + VST
+make_density_plots <- function(sample_name) {
+  df_raw <- data.frame(value = raw_df[[sample_name]])
+  df_vst <- data.frame(value = vst_df[[sample_name]])
+  
+  p_raw <- ggplot(df_raw, aes(x = value)) +
+    geom_density(color = "red") +
+    ggtitle(paste("Raw - Sample", sample_name)) +
+    theme_bw()
+  
+  p_vst <- ggplot(df_vst, aes(x = value)) +
+    geom_density(color = "blue") +
+    ggtitle(paste("VST - Sample", sample_name)) +
+    theme_bw()
+  
+  list(p_raw, p_vst)
+}
+
+plots <- unlist(lapply(colnames(raw_df), make_density_plots), recursive = FALSE)
+
+png("density_plots_raw_vst_grid.png", width = 4000, height = 4000, res = 300)
+grid.arrange(grobs = plots, ncol = 4)
+dev.off()
+```
+**17. Second PCA plot (After DESeq normalization):**
+```
+vsd2 <- vst(dds, blind = TRUE)
+
+plot_PCA2 <- function(vsd.obj) {
+  pcaData <- plotPCA(vsd.obj, intgroup = c("condition"), returnData = TRUE)
+  percentVar <- round(100 * attr(pcaData, "percentVar"))
+  ggplot(pcaData, aes(PC1, PC2, color = condition)) +
+    geom_point(size = 3) +
+    ggrepel::geom_text_repel(aes(label = name), color = "black") +
+    labs(
+      x = paste0("PC1: ", percentVar[1], "% variance"),
+      y = paste0("PC2: ", percentVar[2], "% variance"),
+      title = "PCA Plot (After DESeq Normalization)"
+    ) +
+    theme_minimal()
+}
+
+png("PCA_after_DESeq.png", width = 2000, height = 2000, res = 300)
+plot_PCA2(vsd2)
+dev.off()
+```
+**18. Volcano plot on the DEGs (ordered DE results):**
+```
+res_df <- as.data.frame(reslncapOrdered)
+res_df <- na.omit(res_df)
+res_df$gene <- rownames(res_df)
+
+res_df$regulation <- "Not Significant"
+res_df$regulation[res_df$padj < 0.05 & res_df$log2FoldChange > 1] <- "Upregulated"
+res_df$regulation[res_df$padj < 0.05 & res_df$log2FoldChange < -1] <- "Downregulated"
+
+library(ggplot2)
+
+volcano2 <- ggplot(res_df, aes(x = log2FoldChange, y = -log10(padj), color = regulation)) +
+  geom_point(alpha = 0.6) +
+  scale_color_manual(values = c(
+    "Upregulated" = "#FEA405",
+    "Downregulated" = "purple",
+    "Not Significant" = "gray"
+  )) +
+  geom_hline(yintercept = -log10(0.05), linetype = "dashed") +
+  theme_minimal() +
+  labs(
+    title = "Volcano Plot (DESeq2 Ordered Results)",
+    x = "Log2 Fold Change",
+    y = "-Log10 Adjusted P-Value"
+  )
+
+png("Volcano_LNCAP_Ordered.png", width = 2000, height = 1600, res = 300)
+print(volcano2)
+dev.off()
+```
+**19. Waterfall Plot:**
+```
+library(ggplot2)
+library(stringr)
+
+# Wrap long labels to avoid clipping
+top20$pathway_wrap <- str_wrap(top20$pathway_short, width = 25)
+
+# Save high-resolution, very wide PNG
+png("hallmark_waterfall_final_full.png", width = 3800, height = 2400, res = 300)
+
+ggplot(top20, aes(x = reorder(pathway_wrap, NES), y = NES, fill = NES > 0)) +
+  geom_col(width = 0.7) +
+  coord_flip() +
+  scale_fill_manual(values = c("TRUE" = "#2E86AB", "FALSE" = "#E74C3C"), guide = FALSE) +
+  labs(
+    title = "Hallmark Pathways Altered in LNCaP Hypoxia",
+    x = "Pathway",
+    y = "Normalized Enrichment Score (NES)"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    plot.title = element_text(size = 30, face = "bold"),
+    axis.text.y = element_text(size = 14, lineheight = 0.9),
+    axis.text.x = element_text(size = 14),
+    axis.title.x = element_text(size = 20),
+    axis.title.y = element_text(size = 20),
+    plot.margin = margin(40, 60, 40, 60)
+  )
+
+dev.off()
+```
+**ALL .PNG FILES (RESULTS) OF DESEQ2 ARE UPLOADED IN THE FILES SECTION.**
+
+    
+
+
 
 
 
