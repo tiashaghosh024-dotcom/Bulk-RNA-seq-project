@@ -562,7 +562,7 @@ dev.off()
     png(filename = "sampleheatmap1.png", width = 1000, height = 900, res = 300)
     plotDists(vsd)
     dev.off()
-```
+
 <img width="1000" height="900" alt="sampleheatmap1" src="https://github.com/user-attachments/assets/08f0105c-7164-4a38-b6fd-4fc68a036761" />
 
 
