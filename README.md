@@ -377,14 +377,28 @@ _**Output:**_
 
 3. reloading CSV with proper row names and sorting columnns:
 ```raw_counts <- read.csv("GSE106305_counts_matrix_3011.csv",
-                       header = TRUE,
-                       row.names = "Geneid",
-                       stringsAsFactors = FALSE)
+ header = TRUE,
+ row.names = "Geneid",
+ stringsAsFactors = FALSE)
 
 head(raw_counts)
 dim(raw_counts)
 ```
 <img width="1912" height="1031" alt="image" src="https://github.com/user-attachments/assets/0cc5c157-4e48-4f8c-b437-fe01cff9a139" />
+
+For sorting :
+```raw_counts <- raw_counts[, sort(colnames(raw_counts))]
+```
+
+Thw sorted order will be: LNCAP_Hypoxia_S1
+LNCAP_Hypoxia_S2
+LNCAP_Normoxia_S1
+LNCAP_Normoxia_S2
+PC3_Hypoxia_S1
+PC3_Hypoxia_S2
+PC3_Normoxia_S1
+PC3_Normoxia_S2
+
 
 
 
