@@ -326,10 +326,8 @@ print("Saved to:", output_file)
    Created gse106305_project in working directory and the moved the count matrix in this folder.
    ```r
    install.packages(c("data.table","dplyr","tibble","ggplot2","forcats","RColorBrewer","pheatmap","ggrepel","stringr"))
-
-if (!requireNamespace("BiocManager", quietly = TRUE))
+ if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-
 BiocManager::install(c("DESeq2","biomaRt","msigdbr","clusterProfiler","ReactomePA","org.Hs.eg.db","fgsea"))
 ```
 
