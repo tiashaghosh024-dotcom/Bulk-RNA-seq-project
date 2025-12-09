@@ -453,13 +453,15 @@ A negative log2FoldChange → higher in Hypoxia
 
 _ii. Extracting results for PC3 Hypoxia vs LNCAP Hypoxia:_
 
-```res_PC3_Hypoxia <- results(dds, name = "condition_PC3_Hypoxia_vs_LNCAP_Hypoxia")
+```
+res_PC3_Hypoxia <- results(dds, name = "condition_PC3_Hypoxia_vs_LNCAP_Hypoxia")
 summary(res_PC3_Hypoxia)
 ```
 
 _iii. Extracting results for PC3 Normoxia vs LNCAP Hypoxia:_
 
-```res_PC3_Normoxia <- results(dds, name = "condition_PC3_Normoxia_vs_LNCAP_Hypoxia")
+```
+res_PC3_Normoxia <- results(dds, name = "condition_PC3_Normoxia_vs_LNCAP_Hypoxia")
 summary(res_PC3_Normoxia)
 ```
 
