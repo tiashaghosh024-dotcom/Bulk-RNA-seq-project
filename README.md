@@ -441,7 +441,8 @@ Extracting the first differential expression results:
 
 Extracting results for LNCAP Hypoxia vs LNCAP Normoxia:
 
-```res_LNCAP <- results(dds, contrast = c("condition", "LNCAP_Hypoxia", "LNCAP_Normoxia"))
+```
+res_LNCAP <- results(dds, contrast = c("condition", "LNCAP_Hypoxia", "LNCAP_Normoxia"))
 head(res_LNCAP)
 summary(res_LNCAP)
 ```
