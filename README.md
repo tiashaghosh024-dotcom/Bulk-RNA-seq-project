@@ -222,7 +222,7 @@ _**Output: Aligned, sorted, and indexed bam and bai files**_
 <img width="1912" height="489" alt="image" src="https://github.com/user-attachments/assets/6905edda-2d51-43cc-99b5-2a7f4c9e7044" />
 
 
-# VIII. Quantifiaction by featurecounts:
+# VIII. Quantifiaction:
 This is for creating the gene expression count matrix.
 ```bash
 featureCounts -S 2 \
@@ -233,6 +233,47 @@ featureCounts -S 2 \
 ```
 This will generete: quants/LNCAP_Normoxia_S1_featurecounts.txt
 <img width="1508" height="755" alt="image" src="https://github.com/user-attachments/assets/4d1d6711-c2de-406f-8ae4-b8f2bd84f2d7" />
+
+For all samples to be quantified:
+```bash
+#!/bin/bash
+
+# Go to your aligned reads folder (where all .bam files are stored)
+cd /home/tiasha/bulk_rnaseq_work
+
+# Loop over all BAM files except temporary ones
+for bam in *.bam; do
+
+    # Skip any tmp.*.bam files (just in case)
+    if [[ "$bam" == *.tmp.*.bam ]]; then
+        continue
+    fi
+
+    start=$(date +%s)
+
+    echo "Processing $bam ..."
+
+    featureCounts -s 2 \
+        -a /home/tiasha/bulk_rnaseq_work/Homo_sapiens.GRCh38.113.gtf \
+        -o /home/tiasha/bulk_rnaseq_work/quants/${bam%.bam}_featurecounts.txt \
+        "$bam"
+
+    end=$(date +%s)
+    runtime=$(( (end - start) / 60 ))
+
+    echo "Completed $bam in $runtime minutes."
+    echo "------------------------------------"
+
+done
+```
+Saved this in nano count_all.sh, made it executable and ran the script.
+
+_**Output: Each ~50 MB, and a small .summary file for each.**_
+<img width="1916" height="493" alt="image" src="https://github.com/user-attachments/assets/159a3c5e-abcd-4e54-93eb-4058fe0e1f3e" />
+
+
+
+
 
 
 
