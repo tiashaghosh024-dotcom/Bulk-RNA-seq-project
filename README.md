@@ -468,6 +468,28 @@ summary(res_PC3_Normoxia)
 _**Output:**_
 ```out of 44394 with nonzero total read count adjusted p-value < 0.1 LFC > 0 (up) : 2825, 6.4% LFC < 0 (down) : 3502, 7.9% outliers [1] : 0, 0% low counts [2] : 27240, 61% (mean count < 16) [1] see 'cooksCutoff' argument of ?results [2] see 'independentFiltering' argument of ?results```
 
+**7. Ordering results and saving DE results to a CSV file:**
+```
+res_LNCAP_ordered <- res_LNCAP[order(res_LNCAP$padj), ]
+head(res_LNCAP_ordered)
+```
+<img width="1919" height="530" alt="image" src="https://github.com/user-attachments/assets/d4bb4e18-4974-4f3d-ace3-c6761c922456" />
+This shows the top most significant genes.
+
+Saving DE results to a csv file:
+```
+write.csv(as.data.frame(res_LNCAP_ordered),
+          file = "LNCAP_Normoxia_vs_Hypoxia_DEGs.csv")
+```
+
+
+
+
+
+
+
+   
+
 
 
 
