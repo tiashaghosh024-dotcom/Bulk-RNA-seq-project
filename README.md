@@ -439,15 +439,42 @@ These lines mean that mean the normalization, dispersion estimation, and statist
 Extracting the first differential expression results:
 ```dds$condition <- relevel(dds$condition, ref = "LNCAP_Normoxia")```
 
-Extracting results for LNCAP Hypoxia vs LNCAP Normoxia:
+_i.Extracting results for LNCAP Normoxia vs LNCAP Hypoxia:_
 
 ```
-res_LNCAP <- results(dds, contrast = c("condition", "LNCAP_Hypoxia", "LNCAP_Normoxia"))
+res_LNCAP <- results(dds, contrast = c("condition", "LNCAP_Normoxia", "LNCAP_Hypoxia"))
 head(res_LNCAP)
 summary(res_LNCAP)
 ```
 
 This will give: log2FoldChange, p-values, adjusted p-values, number of up/downregulated genes.
+A positive log2FoldChange → higher in Normoxia
+A negative log2FoldChange → higher in Hypoxia
+
+_ii. Extracting results for PC3 Hypoxia vs LNCAP Hypoxia:_
+
+```res_PC3_Hypoxia <- results(dds, name = "condition_PC3_Hypoxia_vs_LNCAP_Hypoxia")
+summary(res_PC3_Hypoxia)
+```
+
+_iii. Extracting results for PC3 Normoxia vs LNCAP Hypoxia:_
+
+```res_PC3_Normoxia <- results(dds, name = "condition_PC3_Normoxia_vs_LNCAP_Hypoxia")
+summary(res_PC3_Normoxia)
+```
+
+_**Output:**_
+```out of 44394 with nonzero total read count adjusted p-value < 0.1 LFC > 0 (up) : 2825, 6.4% LFC < 0 (down) : 3502, 7.9% outliers [1] : 0, 0% low counts [2] : 27240, 61% (mean count < 16) [1] see 'cooksCutoff' argument of ?results [2] see 'independentFiltering' argument of ?results```
+
+
+
+
+
+
+
+
+
+
 
 
 
