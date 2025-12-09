@@ -426,11 +426,9 @@ dds <- DESeqDataSetFromMatrix(
           colData   = my_colData,
           design    = ~ condition
        )
-dds```
+dds
+```
 
-To check,run,
-```library(DESeq2)```
-and this should load without error.
 
 
 
