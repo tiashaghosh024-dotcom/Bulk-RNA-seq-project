@@ -440,9 +440,11 @@ Extracting the first differential expression results:
 ```dds$condition <- relevel(dds$condition, ref = "LNCAP_Normoxia")```
 
 Extracting results for LNCAP Hypoxia vs LNCAP Normoxia:
+
 ```res_LNCAP <- results(dds, contrast = c("condition", "LNCAP_Hypoxia", "LNCAP_Normoxia"))
 head(res_LNCAP)
-summary(res_LNCAP)```
+summary(res_LNCAP)
+```
 
 This will give: log2FoldChange, p-values, adjusted p-values, number of up/downregulated genes.
 
