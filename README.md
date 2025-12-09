@@ -368,6 +368,13 @@ count_matrix <- as.matrix(raw_counts)
 storage.mode(count_matrix) <- "integer"
 dim(count_matrix)
 ```
+```
+raw <- read.csv("GSE106305_counts_matrix_3011.csv")
+colnames(raw)
+```
+_**Output:**_
+<img width="1918" height="163" alt="image" src="https://github.com/user-attachments/assets/6817a709-fbd4-42c0-b30a-8a131b5565c9" />
+
 
 
 
