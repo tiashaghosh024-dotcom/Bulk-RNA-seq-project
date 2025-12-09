@@ -375,6 +375,20 @@ colnames(raw)
 _**Output:**_
 <img width="1918" height="163" alt="image" src="https://github.com/user-attachments/assets/6817a709-fbd4-42c0-b30a-8a131b5565c9" />
 
+3. reloading CSV with proper row names and sorting columnns:
+```raw_counts <- read.csv("GSE106305_counts_matrix_3011.csv",
+                       header = TRUE,
+                       row.names = "Geneid",
+                       stringsAsFactors = FALSE)
+
+head(raw_counts)
+dim(raw_counts)
+```
+<img width="1912" height="1031" alt="image" src="https://github.com/user-attachments/assets/0cc5c157-4e48-4f8c-b437-fe01cff9a139" />
+
+
+
+
 
 
 
