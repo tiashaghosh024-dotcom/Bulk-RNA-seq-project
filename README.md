@@ -218,11 +218,26 @@ echo "All files processed successfully at $(date)" | tee -a $LOGFILE
 Then save and exit nano, make the script executable and run he script.
 
 
-_**Output: Aligned, sorted, and indexed bam files**_
+_**Output: Aligned, sorted, and indexed bam and bai files**_
 <img width="1912" height="489" alt="image" src="https://github.com/user-attachments/assets/6905edda-2d51-43cc-99b5-2a7f4c9e7044" />
 
 
-# VIII. 
+# VIII. Quantifiaction by featurecounts:
+This is for creating the gene expression count matrix.
+```bash
+featureCounts -S 2 \
+  -a Homo_sapiens.GRCh38.113.gtf \
+  -o quants/LNCAP_Normoxia_S1_featurecounts.txt \
+  LNCAP_Normoxia_S1.bam
+  ## to get counts for from .bam file
+```
+This will generete: quants/LNCAP_Normoxia_S1_featurecounts.txt
+<img width="1508" height="755" alt="image" src="https://github.com/user-attachments/assets/4d1d6711-c2de-406f-8ae4-b8f2bd84f2d7" />
+
+
+
+
+    
 
  
 
