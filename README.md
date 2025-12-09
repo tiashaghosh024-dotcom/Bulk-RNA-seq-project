@@ -322,8 +322,9 @@ print("Saved to:", output_file)
 ```
 
 # X. Bulk RNA-seq Differential Expression Analysis- DESeq2:
-1. Installation and loading data and packages:
+**1. Installation and loading data and packages:**
    Created gse106305_project in working directory and the moved the count matrix in this folder.
+   Installation:
 
   ```
 install.packages(c("data.table","dplyr","tibble","ggplot2","forcats","RColorBrewer","pheatmap","ggrepel","stringr"))
@@ -333,6 +334,42 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 
 BiocManager::install(c("DESeq2","biomaRt","msigdbr","clusterProfiler","ReactomePA","org.Hs.eg.db","fgsea"))
 ```
+Set working directory inside R.
+Load the data and packages:
+
+```
+setwd("~/projects/GSE106305")   # <- changed to my path
+
+library(DESeq2)
+library(tidyverse)
+library(pheatmap)
+library(RColorBrewer)
+library(ggrepel)
+```
+
+**2. Verification and reading counts file:**
+```
+# Read counts
+raw_counts <- read.csv("GSE106305_counts_matrix.csv", header = TRUE, stringsAsFactors = FALSE)
+
+# Check first columns & rownames
+head(raw_counts)
+colnames(raw_counts)[1:20]
+
+# If Gene IDs are in first column (not row names), ensure correct shape:
+# If the file has a "Geneid" column and then sample columns, set it as rownames:
+if ("Geneid" %in% colnames(raw_counts)) {
+  rownames(raw_counts) <- raw_counts$Geneid
+  raw_counts$Geneid <- NULL
+}
+
+# Convert to matrix of integers if needed:
+count_matrix <- as.matrix(raw_counts)
+storage.mode(count_matrix) <- "integer"
+dim(count_matrix)
+```
+
+
 
 
 
