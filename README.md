@@ -484,6 +484,101 @@ write.csv(as.data.frame(res_LNCAP_ordered),
           file = "LNCAP_Normoxia_vs_Hypoxia_DEGs.csv")
 ```
 
+**8. Volcano plot:**
+   Used to quickly identify genes that show both large expression changes and strong statistical significance in differential expression analysis.
+
+   ```
+   res_df <- as.data.frame(res_LNCAP_ordered)
+res_df <- na.omit(res_df)
+res_df$gene <- rownames(res_df)
+
+res_df$regulation <- "Not Significant"
+res_df$regulation[res_df$padj < 0.05 & res_df$log2FoldChange > 1] <- "Upregulated"
+res_df$regulation[res_df$padj < 0.05 & res_df$log2FoldChange < -1] <- "Downregulated"
+
+qp <- ggplot(res_df, aes(x = log2FoldChange, y = -log10(padj), color = regulation)) +
+  geom_point(alpha = 0.6) +
+  scale_color_manual(values = c(
+    "Upregulated" = "#FEA405",
+    "Downregulated" = "purple",
+    "Not Significant" = "gray"
+  )) +
+  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "black") +
+  theme_minimal() +
+  labs(title = "Volcano Plot",
+       x = "Log2 Fold Change",
+       y = "-Log10 Adjusted P-Value")
+
+ggsave("vp_lncap.png", plot = qp, width = 8, height = 6, dpi = 300)
+```
+<img width="2400" height="1800" alt="vp_lncap" src="https://github.com/user-attachments/assets/61c62488-1860-4fe6-8141-6407da07af09" />
+
+**9. PCA Analysis:**
+   Used in bulk RNA-seq to quickly visualize sample-to-sample similarity and identify major sources of variation such as batch effects or clear group separation.
+
+   ```
+   vsd <- vst(dds, blind = TRUE)
+   ```
+   This created the vst object.
+   ```
+   plot_PCA = function (vsd.obj) {
+  pcaData <- plotPCA(vsd.obj, intgroup = c("condition"), returnData = TRUE)
+  percentVar <- round(100 * attr(pcaData, "percentVar"))
+  ggplot(pcaData, aes(PC1, PC2, color = condition)) +
+    geom_point(size = 3) +
+    labs(
+      x = paste0("PC1: ", percentVar[1], "% variance"),
+      y = paste0("PC2: ", percentVar[2], "% variance"),
+      title = "PCA Plot colored by condition"
+    ) +
+    ggrepel::geom_text_repel(aes(label = name), color = "black")
+}
+png(filename = "pcab.png", width = 2000, height = 2000, res = 300)
+plot_PCA(vsd)
+dev.off()
+```
+<img width="2000" height="2000" alt="pcab" src="https://github.com/user-attachments/assets/6ddb8061-975f-4401-b69e-e3b3ddb77f2b" />
+
+**10. Sample to sample distance heatmap:**
+    Shows how similar or different the samples are from one another, helping detect outliers, batch effects and whether biological replicates cluster together as expected.
+    
+    ```
+    plotDists = function (vsd.obj) {
+    sampleDists <- dist(t(assay(vsd.obj)))
+    sampleDistMatrix <- as.matrix(sampleDists)
+    rownames(sampleDistMatrix) <- paste(vsd.obj$condition)
+    colors <- colorRampPalette(rev(RColorBrewer::brewer.pal(9, "Blues")))(55)
+    pheatmap::pheatmap(
+    sampleDistMatrix,
+    clustering_distance_rows = sampleDists,
+    clustering_distance_cols = sampleDists,
+    col = colors,
+    fontsize_row = 4,
+    fontsize_col = 4,
+    fontsize_legend = 4,
+    fontsize = 4
+    )
+    }
+    png(filename = "sampleheatmap1.png", width = 1000, height = 900, res = 300)
+    plotDists(vsd)
+    dev.off()
+```
+<img width="1000" height="900" alt="sampleheatmap1" src="https://github.com/user-attachments/assets/08f0105c-7164-4a38-b6fd-4fc68a036761" />
+
+
+
+   
+    
+
+
+   
+
+
+
+
+
+   
+
 
 
 
