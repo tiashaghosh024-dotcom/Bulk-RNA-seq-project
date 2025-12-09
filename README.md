@@ -399,7 +399,43 @@ PC3_Hypoxia_S2
 PC3_Normoxia_S1
 PC3_Normoxia_S2
 
-4. 
+__**4. Check column sums:**__
+   This checks that counts look reasonable.
+   ```colSums(raw_counts)```
+   <img width="1919" height="187" alt="image" src="https://github.com/user-attachments/assets/4d411ab8-90c0-4e40-a98e-8cd0d202f6c7" />
+
+__**5. Creating metadata (colData)**__
+```condition <- c(
+  rep("LNCAP_Hypoxia", 2),
+  rep("LNCAP_Normoxia", 2),
+  rep("PC3_Hypoxia", 2),
+  rep("PC3_Normoxia", 2)
+)
+
+my_colData <- as.data.frame(condition)
+rownames(my_colData) <- colnames(raw_counts)
+
+head (my_colData)
+```
+<img width="1582" height="548" alt="image" src="https://github.com/user-attachments/assets/849f43d7-4f3b-4656-a2a5-c6565c07b286" />
+
+6. Creating the DESeq2 dataset:
+   ```dds <- DESeqDataSetFromMatrix(
+          countData = raw_counts,
+          colData   = my_colData,
+          design    = ~ condition
+       )
+
+dds
+```
+To check,run,
+```library(DESeq2)```
+and this should load without error.
+
+
+
+
+
 
 
 
