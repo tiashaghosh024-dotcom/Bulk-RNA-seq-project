@@ -332,7 +332,7 @@ install.packages(c("data.table","dplyr","tibble","ggplot2","forcats","RColorBrew
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-BiocManager::install(c("DESeq2","biomaRt","msigdbr","clusterProfiler","ReactomePA","org.Hs.eg.db","fgsea"))
+BiocManager::install(c("DESeq2","biomaRt","msigdbr","clusterProfiler","ReactomePA","org.Hs.eg.db","fgsea","AnnotationDbi", "DOSE", "enrichplot"))
 ```
 Set working directory inside R.
 Load the data and packages:
@@ -345,6 +345,12 @@ library(tidyverse)
 library(pheatmap)
 library(RColorBrewer)
 library(ggrepel)
+library(clusterProfiler)
+library(fgsea)
+library(DOSE)
+library(enrichplot)
+library(org.Hs.eg.db)
+
 ```
 
 **2. Verification and reading counts file:**
@@ -511,7 +517,6 @@ qp <- ggplot(res_df, aes(x = log2FoldChange, y = -log10(padj), color = regulatio
 
 ggsave("vp_lncap.png", plot = qp, width = 8, height = 6, dpi = 300)
 ```
-<img width="2400" height="1800" alt="vp_lncap" src="https://github.com/user-attachments/assets/61c62488-1860-4fe6-8141-6407da07af09" />
 
 **9. PCA Analysis:**
    Used in bulk RNA-seq to quickly visualize sample-to-sample similarity and identify major sources of variation such as batch effects or clear group separation.
@@ -537,12 +542,11 @@ png(filename = "pcab.png", width = 2000, height = 2000, res = 300)
 plot_PCA(vsd)
 dev.off()
 ```
-<img width="2000" height="2000" alt="pcab" src="https://github.com/user-attachments/assets/6ddb8061-975f-4401-b69e-e3b3ddb77f2b" />
 
 **10. Sample to sample distance heatmap:**
     Shows how similar or different the samples are from one another, helping detect outliers, batch effects and whether biological replicates cluster together as expected.
     
-    ```
+   ```
     plotDists = function (vsd.obj) {
     sampleDists <- dist(t(assay(vsd.obj)))
     sampleDistMatrix <- as.matrix(sampleDists)
@@ -562,8 +566,104 @@ dev.off()
     png(filename = "sampleheatmap1.png", width = 1000, height = 900, res = 300)
     plotDists(vsd)
     dev.off()
+```
 
-<img width="1000" height="900" alt="sampleheatmap1" src="https://github.com/user-attachments/assets/08f0105c-7164-4a38-b6fd-4fc68a036761" />
+11. **Gene Set Enrichment Analysis (GSEA) of LNCaP Hypoxia RNA-seq:**
+    i. Prepare pathways for fgsea (installed msigdbr)
+    ```
+    # Use new msigdbr syntax
+    m_df <- msigdbr(species = "Homo sapiens", collection = "H")
+    # Convert to fgsea list format
+    pathways_hallmark <- m_df %>%
+    split(x = .$ensembl_gene, f = .$gs_name)
+    length(pathways_hallmark)
+    head(names(pathways_hallmark))
+    ```
+    <img width="1919" height="784" alt="image" src="https://github.com/user-attachments/assets/a978f390-a4c5-48c5-909e-21a6cb7fc649" />
+
+    ii. Run fgsea
+    ```
+    fgsea_res <- fgsea(
+    pathways = pathways_hallmark,
+    stats = gene_ranks,
+    minSize = 15,
+    maxSize = 500,
+    nperm = 1000
+    )
+    # Sort results
+    fgsea_res <- fgsea_res[order(fgsea_res$pval), ]
+    head(fgsea_res)
+    ```
+    iii. Save GSEA table
+    ```
+    write.csv(fgsea_res, "fgsea_hallmark_results.csv", row.names = FALSE)
+    ```
+    iv. Plot NES-ranked pathways (barplot)
+```
+     library(ggplot2)
+
+p_gsea <- ggplot(fgsea_res[1:20, ], aes(x = reorder(pathway, NES), y = NES, fill = padj)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  scale_fill_continuous(type = "viridis") +
+  theme_bw() +
+  labs(title = "Top 20 Hallmark Pathways (fgsea)")
+
+ggsave("gsea_barplot.png", p_gsea, width = 8, height = 6, dpi = 300)
+```
+   v. Enrichment plot for the top pathway
+```
+top_pathway <- fgsea_res$pathway[1]
+
+png("fgsea_top_pathway.png", width = 2000, height = 1200, res = 300)
+plotEnrichment(pathways_hallmark[[top_pathway]], gene_ranks) +
+  ggtitle(paste("Top Enriched Pathway:", top_pathway))
+dev.off()
+```
+  vi. Barplot of top enriched pathways
+```
+library(ggplot2)
+
+top20 <- fgsea_res[1:20, ]
+
+png("fgsea_barplot.png", width = 2000, height = 1400, res = 300)
+ggplot(top20, aes(x = reorder(pathway, NES), y = NES, fill = padj)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_gradient(low = "red", high = "blue") +
+  labs(
+    title = "Top 20 Enriched Hallmark Pathways",
+    x = "Pathway",
+    y = "Normalized Enrichment Score (NES)",
+    fill = "Adj P-value"
+  ) +
+  theme_bw(base_size = 14)
+dev.off()
+```
+  vii. Leading edge enrichment plot
+  ```
+top_pathway <- fgsea_res$pathway[1]
+top_pathway
+```
+```
+png("fgsea_leading_edge.png", width = 2000, height = 1400, res = 300)
+plotEnrichment(
+  pathways_hallmark[[top_pathway]],
+  gene_ranks
+) + 
+  ggtitle(paste("Leading Edge Plot for:", top_pathway))
+dev.off()
+```
+
+
+
+
+
+
+
+    
+
+
 
 
 
