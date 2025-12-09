@@ -429,6 +429,19 @@ dds <- DESeqDataSetFromMatrix(
 dds
 ```
 
+Ran differetial expression analysis:
+```dds <- DESeq(dds)```
+
+_**Output:**_
+<img width="1919" height="719" alt="image" src="https://github.com/user-attachments/assets/c0fc9bf5-d5b8-4380-b719-9524e77e022a" />
+These lines mean that mean the normalization, dispersion estimation, and statistical testing are all completed.
+
+
+
+
+
+
+
 
 
 
