@@ -436,6 +436,20 @@ _**Output:**_
 <img width="1919" height="719" alt="image" src="https://github.com/user-attachments/assets/c0fc9bf5-d5b8-4380-b719-9524e77e022a" />
 These lines mean that mean the normalization, dispersion estimation, and statistical testing are all completed.
 
+Extracting the first differential expression results:
+```r
+dds$condition <- relevel(dds$condition, ref = "LNCAP_Normoxia")```
+
+Extracting results for LNCAP Hypoxia vs LNCAP Normoxia:
+```r
+res_LNCAP <- results(dds, contrast = c("condition", "LNCAP_Hypoxia", "LNCAP_Normoxia"))
+head(res_LNCAP)
+summary(res_LNCAP)```
+
+This will give: log2FoldChange, p-values, adjusted p-values, number of up/downregulated genes.
+
+
+
 
 
 
