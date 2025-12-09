@@ -419,15 +419,15 @@ head (my_colData)
 ```
 <img width="1582" height="548" alt="image" src="https://github.com/user-attachments/assets/849f43d7-4f3b-4656-a2a5-c6565c07b286" />
 
-6. Creating the DESeq2 dataset:
-   ```dds <- DESeqDataSetFromMatrix(
+**6. Creating the DESeq2 dataset:**
+   ```
+dds <- DESeqDataSetFromMatrix(
           countData = raw_counts,
           colData   = my_colData,
           design    = ~ condition
        )
+dds```
 
-dds
-```
 To check,run,
 ```library(DESeq2)```
 and this should load without error.
