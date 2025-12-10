@@ -326,7 +326,7 @@ print("Saved to:", output_file)
    Created gse106305_project in working directory and the moved the count matrix in this folder.
    Installation:
 
-  ```
+ ```r
 install.packages(c(
   "data.table",
   "dplyr",
@@ -355,7 +355,6 @@ BiocManager::install(c(
   "DOSE",
   "enrichplot"
 ))
-
 ```
 Set working directory inside R.
 Load the data and packages:
