@@ -327,12 +327,35 @@ print("Saved to:", output_file)
    Installation:
 
   ```
-install.packages(c("data.table","dplyr","tibble","ggplot2","forcats","RColorBrewer","pheatmap","ggrepel","stringr"))
+install.packages(c(
+  "data.table",
+  "dplyr",
+  "tibble",
+  "ggplot2",
+  "forcats",
+  "RColorBrewer",
+  "pheatmap",
+  "ggrepel",
+  "stringr"
+))
 
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
 
-BiocManager::install(c("DESeq2","biomaRt","msigdbr","clusterProfiler","ReactomePA","org.Hs.eg.db","fgsea","AnnotationDbi", "DOSE", "enrichplot"))
+BiocManager::install(c(
+  "DESeq2",
+  "biomaRt",
+  "msigdbr",
+  "clusterProfiler",
+  "ReactomePA",
+  "org.Hs.eg.db",
+  "fgsea",
+  "AnnotationDbi",
+  "DOSE",
+  "enrichplot"
+))
+
 ```
 Set working directory inside R.
 Load the data and packages:
