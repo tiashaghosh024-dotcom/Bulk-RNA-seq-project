@@ -361,7 +361,7 @@ Set working directory inside R.
 Load the data and packages:
 
 ```
-setwd("~/projects/GSE106305")   # <- changed to my path
+setwd("~/projects/GSE106305")   #<- changed to my path
 
 library(DESeq2)
 library(tidyverse)
@@ -378,10 +378,10 @@ library(org.Hs.eg.db)
 
 **2. Verification and reading counts file:**
 ```
-# Read counts
+#Read counts
 raw_counts <- read.csv("GSE106305_counts_matrix_3011.csv", header = TRUE, stringsAsFactors = FALSE)
 
-# Check first columns & rownames
+#Check first columns & rownames
 head(raw_counts)
 colnames(raw_counts)[1:20]
 
@@ -392,7 +392,7 @@ if ("Geneid" %in% colnames(raw_counts)) {
   raw_counts$Geneid <- NULL
 }
 
-# Convert to matrix of integers if needed:
+#Convert to matrix of integers if needed:
 count_matrix <- as.matrix(raw_counts)
 storage.mode(count_matrix) <- "integer"
 dim(count_matrix)
@@ -517,7 +517,7 @@ write.csv(as.data.frame(res_LNCAP_ordered),
    Used to quickly identify genes that show both large expression changes and strong statistical significance in differential expression analysis.
 
    ```
-   res_df <- as.data.frame(res_LNCAP_ordered)
+res_df <- as.data.frame(res_LNCAP_ordered)
 res_df <- na.omit(res_df)
 res_df$gene <- rownames(res_df)
 
@@ -549,7 +549,7 @@ ggsave("vp_lncap.png", plot = qp, width = 8, height = 6, dpi = 300)
    ```
    This created the vst object.
    ```
-   plot_PCA = function (vsd.obj) {
+  plot_PCA = function (vsd.obj) {
   pcaData <- plotPCA(vsd.obj, intgroup = c("condition"), returnData = TRUE)
   percentVar <- round(100 * attr(pcaData, "percentVar"))
   ggplot(pcaData, aes(PC1, PC2, color = condition)) +
@@ -594,9 +594,9 @@ dev.off()
 11. **Gene Set Enrichment Analysis (GSEA) of LNCaP Hypoxia RNA-seq:**
     i. Prepare pathways for fgsea (installed msigdbr)
     ```
-    # Use new msigdbr syntax
+    #Use new msigdbr syntax
     m_df <- msigdbr(species = "Homo sapiens", collection = "H")
-    # Convert to fgsea list format
+    #Convert to fgsea list format
     pathways_hallmark <- m_df %>%
     split(x = .$ensembl_gene, f = .$gs_name)
     length(pathways_hallmark)
@@ -613,7 +613,7 @@ dev.off()
     maxSize = 500,
     nperm = 1000
     )
-    # Sort results
+    #Sort results
     fgsea_res <- fgsea_res[order(fgsea_res$pval), ]
     head(fgsea_res)
     ```
@@ -685,7 +685,7 @@ dev.off()
 ```
 **13. Heatmap of Top 30 Genes With Highest Absolute LFC:**
 ```
-# Order by absolute log2FC
+#Order by absolute log2FC
 top_genes_LFC <- rownames(res_LNCAP_ordered)[order(abs(res_LNCAP_ordered$log2FoldChange), decreasing = TRUE)][1:30]
 ```
 ```
@@ -708,7 +708,7 @@ dev.off()
 ```
 **14. Creating boxplots:**
 ```
-# extract normalized counts
+#extract normalized counts
 df_counts <- plotCounts(dds, gene = gene_id, returnData = TRUE)
 
 library(ggplot2)
@@ -727,10 +727,10 @@ dev.off()
 15. Heatmap — Top 30 Most Variable Genes
     -used on mostly all RNA-seq QC pipelines
 ```
-# variance for each gene
+#variance for each gene
 gene_variances <- apply(assay(vsd), 1, var)
 
-# Select top 30 most variable genes
+#Select top 30 most variable genes
 top30 <- names(sort(gene_variances, decreasing = TRUE))[1:30]
 
 mat_topvar <- assay(vsd)[top30, ]
@@ -751,14 +751,14 @@ dev.off()
 ```
 Heatmap for Top 30 DE Genes (LFC-based):
 ```
-# Clean DE results
+#Clean DE results
 res_clean <- res_lncap[!is.na(res_lncap$log2FoldChange), ]
 res_clean <- res_clean[order(abs(res_clean$log2FoldChange), decreasing = TRUE), ]
 
-# Top 30 DE genes
+#Top 30 DE genes
 top_genes_LFC <- rownames(res_clean)[1:30]
 
-# Extract only genes present in VSD matrix
+#Extract only genes present in VSD matrix
 top_genes_LFC <- top_genes_LFC[top_genes_LFC %in% rownames(vsd)]
 
 mat_lfc <- assay(vsd)[top_genes_LFC, ]
@@ -779,7 +779,7 @@ dev.off()
 **16. Zero count distribution table:**
 Counts per gene = how many samples have zero counts. Saves a small summary table.
 ```
-# Zero-count distribution
+#Zero-count distribution
 counts_mat <- as.matrix(assay(dds))   # or raw count matrix you used
 zero_counts <- rowSums(counts_mat == 0)
 zc_table <- as.data.frame(table(zero_counts))
@@ -790,16 +790,16 @@ summary(zero_counts)
 ```
 **17. QC figure: Density plots raw vst**
 ```
-# ---- Raw vs VST Density Plots (Grid View) ----
+#Raw vs VST Density Plots (Grid View) 
 
 library(ggplot2)
 library(gridExtra)
 
-# Convert raw counts to data frame for density plotting
+#Convert raw counts to data frame for density plotting
 raw_df <- as.data.frame(assay(dds)[, ])
 vst_df <- as.data.frame(assay(vsd)[, ])
 
-# Function to create density plots for raw + VST
+#Function to create density plots for raw + VST
 make_density_plots <- function(sample_name) {
   df_raw <- data.frame(value = raw_df[[sample_name]])
   df_vst <- data.frame(value = vst_df[[sample_name]])
@@ -881,10 +881,10 @@ dev.off()
 library(ggplot2)
 library(stringr)
 
-# Wrap long labels to avoid clipping
+#Wrap long labels to avoid clipping
 top20$pathway_wrap <- str_wrap(top20$pathway_short, width = 25)
 
-# Save high-resolution, very wide PNG
+#Save high-resolution, very wide PNG
 png("hallmark_waterfall_final_full.png", width = 3800, height = 2400, res = 300)
 
 ggplot(top20, aes(x = reorder(pathway_wrap, NES), y = NES, fill = NES > 0)) +
