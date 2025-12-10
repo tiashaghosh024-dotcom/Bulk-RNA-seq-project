@@ -625,8 +625,7 @@ head(names(pathways_hallmark))
  <img width="1919" height="784" alt="image" src="https://github.com/user-attachments/assets/a978f390-a4c5-48c5-909e-21a6cb7fc649" />
 
    ii. Run fgsea
-   
-    ```r
+   ```r
     fgsea_res <- fgsea(
     pathways = pathways_hallmark,
      stats = gene_ranks,
@@ -637,10 +636,11 @@ head(names(pathways_hallmark))
 
     # Sort results
     fgsea_res <- fgsea_res[order(fgsea_res$pval), ]
-    head(fgsea_res) 
-   ```iii. Save GSEA table
+    head(fgsea_res)
+```
+iii. Save GSEA table
    ```r
-write.csv(fgsea_res, "fgsea_hallmark_results.csv", row.names = FALSE)
+    write.csv(fgsea_res, "fgsea_hallmark_results.csv", row.names = FALSE)
 ```
 
 iv. Plot NES-ranked pathways (barplot)
