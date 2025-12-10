@@ -1,4 +1,4 @@
-# Bulk-RNA-seq-project
+# Bulk-RNA-seq Analysis 
 Overview: 
 
 This project aims to show a complete Bulk RNA-Seq workflow- from raw sequencing data up to differential expression analysis using DESeq2. We tried to analyse the effect of hypoxia on gene expression in two cancer cell lines LNCAP and PC3.
