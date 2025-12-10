@@ -715,32 +715,7 @@ png("MAplot_LNCAP.png", width = 2000, height = 1600, res = 300)
 plotMA(res_LNCAP, ylim = c(-5, 5), cex = 0.6)
 dev.off()
 ```
-**13. Heatmap of Top 30 Genes With Highest Absolute LFC:**
-```r
-# Order by absolute log2FC
-top_genes_LFC <- rownames(res_LNCAP_ordered)[
-  order(abs(res_LNCAP_ordered$log2FoldChange), decreasing = TRUE)
-][1:30]
-```
-```r
-mat <- assay(vsd)[top_genes_LFC, ]
-mat <- mat - rowMeans(mat)   # standard scaling
-```
-```r
-library(pheatmap)
-
-png("Top30_LFC_heatmap.png", width = 2000, height = 1600, res = 300)
-pheatmap(
-  mat,
-  annotation_col = as.data.frame(colData(dds)["condition"]),
-  fontsize_row = 6,
-  scale = "row",
-  clustering_distance_rows = "euclidean",
-  clustering_distance_cols = "euclidean"
-)
-dev.off()
-```
-**14. Creating boxplots:**
+**13. Creating boxplots:**
 ```r
 # extract normalized counts
 df_counts <- plotCounts(dds, gene = gene_id, returnData = TRUE)
@@ -758,7 +733,7 @@ ggplot(df_counts, aes(x = condition, y = count, fill = condition)) +
 
 dev.off()
 ```
-**15. Heatmap — Top 30 Most Variable Genes**
+**14. Heatmap — Top 30 Most Variable Genes**
     -used on mostly all RNA-seq QC pipelines
 ```r
 # variance for each gene
@@ -814,7 +789,7 @@ pheatmap(
 )
 dev.off()
 ```
-**16. Zero count distribution table:**
+**15. Zero count distribution table:**
 Counts per gene = how many samples have zero counts. Saves a small summary table.
 ```r
 # Zero-count distribution
@@ -832,7 +807,7 @@ write.csv(
 
 summary(zero_counts)
 ```
-**17. QC figure: Density plots raw vst**
+**16. QC figure: Density plots raw vst**
 ```r
 # Raw vs VST Density Plots (Grid View) 
 
@@ -867,7 +842,7 @@ png("density_plots_raw_vst_grid.png", width = 4000, height = 4000, res = 300)
 grid.arrange(grobs = plots, ncol = 4)
 dev.off()
 ```
-**18. Second PCA plot (After DESeq normalization):**
+**17. Second PCA plot (After DESeq normalization):**
 ```r
 vsd2 <- vst(dds, blind = TRUE)
 
@@ -889,7 +864,7 @@ png("PCA_after_DESeq.png", width = 2000, height = 2000, res = 300)
 plot_PCA2(vsd2)
 dev.off()
 ```
-**19. Volcano plot on the DEGs (ordered DE results):**
+**18. Volcano plot on the DEGs (ordered DE results):**
 ```r
 res_df <- as.data.frame(reslncapOrdered)
 res_df <- na.omit(res_df)
@@ -920,7 +895,7 @@ png("Volcano_LNCAP_Ordered.png", width = 2000, height = 1600, res = 300)
 print(volcano2)
 dev.off()
 ```
-**20. Waterfall Plot:**
+**19. Waterfall Plot:**
 ```r
 library(ggplot2)
 library(stringr)
