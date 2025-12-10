@@ -376,11 +376,13 @@ library(org.Hs.eg.db)
 ```
 
 **2. Verification and reading counts file:**
-```
-#Read counts
-raw_counts <- read.csv("GSE106305_counts_matrix_3011.csv", header = TRUE, stringsAsFactors = FALSE)
+```r
+# Read counts
+raw_counts <- read.csv("GSE106305_counts_matrix_3011.csv",
+                       header = TRUE,
+                       stringsAsFactors = FALSE)
 
-#Check first columns & rownames
+# Check first columns & rownames
 head(raw_counts)
 colnames(raw_counts)[1:20]
 
@@ -391,12 +393,12 @@ if ("Geneid" %in% colnames(raw_counts)) {
   raw_counts$Geneid <- NULL
 }
 
-#Convert to matrix of integers if needed:
+# Convert to matrix of integers if needed:
 count_matrix <- as.matrix(raw_counts)
 storage.mode(count_matrix) <- "integer"
 dim(count_matrix)
 ```
-```
+```r
 raw <- read.csv("GSE106305_counts_matrix_3011.csv")
 colnames(raw)
 ```
@@ -404,20 +406,21 @@ _**Output:**_
 <img width="1918" height="163" alt="image" src="https://github.com/user-attachments/assets/6817a709-fbd4-42c0-b30a-8a131b5565c9" />
 
 **3. reloading CSV with proper row names and sorting columnns:**
-```
- raw_counts <- read.csv("GSE106305_counts_matrix_3011.csv",
- header = TRUE,
- row.names = "Geneid",
- stringsAsFactors = FALSE)
+```r
+raw_counts <- read.csv("GSE106305_counts_matrix_3011.csv",
+                       header = TRUE,
+                       row.names = "Geneid",
+                       stringsAsFactors = FALSE)
 
- head(raw_counts)
- dim(raw_counts)
+head(raw_counts)
+dim(raw_counts)
 ```
 <img width="1912" height="1031" alt="image" src="https://github.com/user-attachments/assets/0cc5c157-4e48-4f8c-b437-fe01cff9a139" />
 
 For sorting :
-```raw_counts <- raw_counts[, sort(colnames(raw_counts))]```
-
+```r
+raw_counts <- raw_counts[, sort(colnames(raw_counts))]
+```
 Thw sorted order will be:
 LNCAP_Hypoxia_S1
 LNCAP_Hypoxia_S2
@@ -434,8 +437,8 @@ __**4. Check column sums:**__
    <img width="1919" height="187" alt="image" src="https://github.com/user-attachments/assets/4d411ab8-90c0-4e40-a98e-8cd0d202f6c7" />
 
 __**5. Creating metadata (colData)**__
-```
-  condition <- c(
+```r
+condition <- c(
   rep("LNCAP_Hypoxia", 2),
   rep("LNCAP_Normoxia", 2),
   rep("PC3_Hypoxia", 2),
@@ -445,17 +448,18 @@ __**5. Creating metadata (colData)**__
 my_colData <- as.data.frame(condition)
 rownames(my_colData) <- colnames(raw_counts)
 
-head (my_colData)
+head(my_colData)
 ```
 <img width="1582" height="548" alt="image" src="https://github.com/user-attachments/assets/849f43d7-4f3b-4656-a2a5-c6565c07b286" />
 
 **6. Creating the DESeq2 dataset:**
-   ```
+   ```r
 dds <- DESeqDataSetFromMatrix(
-          countData = raw_counts,
-          colData   = my_colData,
-          design    = ~ condition
-       )
+  countData = raw_counts,
+  colData   = my_colData,
+  design    = ~ condition
+)
+
 dds
 ```
 
@@ -467,30 +471,36 @@ _**Output:**_
 These lines mean that mean the normalization, dispersion estimation, and statistical testing are all completed.
 
 Extracting the first differential expression results:
-```dds$condition <- relevel(dds$condition, ref = "LNCAP_Normoxia")```
-
+```r
+dds$condition <- relevel(dds$condition, ref = "LNCAP_Normoxia")
+```
 _i.Extracting results for LNCAP Normoxia vs LNCAP Hypoxia:_
 
-```
-res_LNCAP <- results(dds, contrast = c("condition", "LNCAP_Normoxia", "LNCAP_Hypoxia"))
+```r
+res_LNCAP <- results(
+  dds,
+  contrast = c("condition", "LNCAP_Normoxia", "LNCAP_Hypoxia")
+)
+
 head(res_LNCAP)
 summary(res_LNCAP)
 ```
-
 This will give: log2FoldChange, p-values, adjusted p-values, number of up/downregulated genes.
 A positive log2FoldChange → higher in Normoxia
 A negative log2FoldChange → higher in Hypoxia
 
 _ii. Extracting results for PC3 Hypoxia vs LNCAP Hypoxia:_
 
-```
-res_PC3_Hypoxia <- results(dds, name = "condition_PC3_Hypoxia_vs_LNCAP_Hypoxia")
+```r
+res_PC3_Hypoxia <- results(dds,
+                           name = "condition_PC3_Hypoxia_vs_LNCAP_Hypoxia")
+
 summary(res_PC3_Hypoxia)
 ```
 
 _iii. Extracting results for PC3 Normoxia vs LNCAP Hypoxia:_
 
-```
+```r
 res_PC3_Normoxia <- results(dds, name = "condition_PC3_Normoxia_vs_LNCAP_Hypoxia")
 summary(res_PC3_Normoxia)
 ```
@@ -499,7 +509,7 @@ _**Output:**_
 ```out of 44394 with nonzero total read count adjusted p-value < 0.1 LFC > 0 (up) : 2825, 6.4% LFC < 0 (down) : 3502, 7.9% outliers [1] : 0, 0% low counts [2] : 27240, 61% (mean count < 16) [1] see 'cooksCutoff' argument of ?results [2] see 'independentFiltering' argument of ?results```
 
 **7. Ordering results and saving DE results to a CSV file:**
-```
+```r
 res_LNCAP_ordered <- res_LNCAP[order(res_LNCAP$padj), ]
 head(res_LNCAP_ordered)
 ```
@@ -507,15 +517,17 @@ head(res_LNCAP_ordered)
 This shows the top most significant genes.
 
 Saving DE results to a csv file:
-```
-write.csv(as.data.frame(res_LNCAP_ordered),
-          file = "LNCAP_Normoxia_vs_Hypoxia_DEGs.csv")
+```r
+write.csv(
+  as.data.frame(res_LNCAP_ordered),
+  file = "LNCAP_Normoxia_vs_Hypoxia_DEGs.csv"
+)
 ```
 
 **8. Volcano plot:**
    Used to quickly identify genes that show both large expression changes and strong statistical significance in differential expression analysis.
 
-   ```
+  ```r
 res_df <- as.data.frame(res_LNCAP_ordered)
 res_df <- na.omit(res_df)
 res_df$gene <- rownames(res_df)
@@ -543,14 +555,15 @@ ggsave("vp_lncap.png", plot = qp, width = 8, height = 6, dpi = 300)
 **9. PCA Analysis:**
    Used in bulk RNA-seq to quickly visualize sample-to-sample similarity and identify major sources of variation such as batch effects or clear group separation.
 
-   ```
-   vsd <- vst(dds, blind = TRUE)
-   ```
+  ```r
+vsd <- vst(dds, blind = TRUE)
+```
    This created the vst object.
-   ```
-  plot_PCA = function (vsd.obj) {
+  ```r
+plot_PCA = function(vsd.obj) {
   pcaData <- plotPCA(vsd.obj, intgroup = c("condition"), returnData = TRUE)
   percentVar <- round(100 * attr(pcaData, "percentVar"))
+  
   ggplot(pcaData, aes(PC1, PC2, color = condition)) +
     geom_point(size = 3) +
     labs(
@@ -560,6 +573,7 @@ ggsave("vp_lncap.png", plot = qp, width = 8, height = 6, dpi = 300)
     ) +
     ggrepel::geom_text_repel(aes(label = name), color = "black")
 }
+
 png(filename = "pcab.png", width = 2000, height = 2000, res = 300)
 plot_PCA(vsd)
 dev.off()
@@ -567,14 +581,15 @@ dev.off()
 
 **10. Sample to sample distance heatmap:**
     Shows how similar or different the samples are from one another, helping detect outliers, batch effects and whether biological replicates cluster together as expected.
-    
-   ```
-    plotDists = function (vsd.obj) {
-    sampleDists <- dist(t(assay(vsd.obj)))
-    sampleDistMatrix <- as.matrix(sampleDists)
-    rownames(sampleDistMatrix) <- paste(vsd.obj$condition)
-    colors <- colorRampPalette(rev(RColorBrewer::brewer.pal(9, "Blues")))(55)
-    pheatmap::pheatmap(
+  ```r
+plotDists = function (vsd.obj) {
+  sampleDists <- dist(t(assay(vsd.obj)))
+  sampleDistMatrix <- as.matrix(sampleDists)
+  rownames(sampleDistMatrix) <- paste(vsd.obj$condition)
+  
+  colors <- colorRampPalette(rev(RColorBrewer::brewer.pal(9, "Blues")))(55)
+  
+  pheatmap::pheatmap(
     sampleDistMatrix,
     clustering_distance_rows = sampleDists,
     clustering_distance_cols = sampleDists,
@@ -583,58 +598,75 @@ dev.off()
     fontsize_col = 4,
     fontsize_legend = 4,
     fontsize = 4
-    )
-    }
-    png(filename = "sampleheatmap1.png", width = 1000, height = 900, res = 300)
-    plotDists(vsd)
-    dev.off()
+  )
+}
+
+png(filename = "sampleheatmap1.png", width = 1000, height = 900, res = 300)
+plotDists(vsd)
+dev.off()
 ```
 
 11. **Gene Set Enrichment Analysis (GSEA) of LNCaP Hypoxia RNA-seq:**
     i. Prepare pathways for fgsea (installed msigdbr)
-    ```
-    #Use new msigdbr syntax
-    m_df <- msigdbr(species = "Homo sapiens", collection = "H")
-    #Convert to fgsea list format
-    pathways_hallmark <- m_df %>%
-    split(x = .$ensembl_gene, f = .$gs_name)
-    length(pathways_hallmark)
-    head(names(pathways_hallmark))
-    ```
-    <img width="1919" height="784" alt="image" src="https://github.com/user-attachments/assets/a978f390-a4c5-48c5-909e-21a6cb7fc649" />
+  ```r
+# Use new msigdbr syntax
+m_df <- msigdbr(
+  species    = "Homo sapiens",
+  collection = "H"
+)
 
-    ii. Run fgsea
-    ```
+# Convert to fgsea list format
+pathways_hallmark <- m_df %>%
+  split(x = .$ensembl_gene, f = .$gs_name)
+
+length(pathways_hallmark)
+head(names(pathways_hallmark))
+```
+ <img width="1919" height="784" alt="image" src="https://github.com/user-attachments/assets/a978f390-a4c5-48c5-909e-21a6cb7fc649" />
+
+   ii. Run fgsea
+   
+    ```r
     fgsea_res <- fgsea(
     pathways = pathways_hallmark,
-    stats = gene_ranks,
-    minSize = 15,
-    maxSize = 500,
-    nperm = 1000
-    )
-    #Sort results
-    fgsea_res <- fgsea_res[order(fgsea_res$pval), ]
-    head(fgsea_res)
-    ```
-    iii. Save GSEA table
-    ```
-    write.csv(fgsea_res, "fgsea_hallmark_results.csv", row.names = FALSE)
-    ```
-    iv. Plot NES-ranked pathways (barplot)
-```
-     library(ggplot2)
+     stats = gene_ranks,
+     minSize = 15,
+     maxSize = 500,
+      nperm = 1000
+       )
 
-p_gsea <- ggplot(fgsea_res[1:20, ], aes(x = reorder(pathway, NES), y = NES, fill = padj)) +
+    # Sort results
+    fgsea_res <- fgsea_res[order(fgsea_res$pval), ]
+    head(fgsea_res) 
+   ```iii. Save GSEA table
+   ```r
+write.csv(fgsea_res, "fgsea_hallmark_results.csv", row.names = FALSE)
+```
+
+iv. Plot NES-ranked pathways (barplot)
+```r
+library(ggplot2)
+
+p_gsea <- ggplot(fgsea_res[1:20, ], 
+                 aes(x = reorder(pathway, NES), 
+                     y = NES, 
+                     fill = padj)) +
   geom_bar(stat = "identity") +
   coord_flip() +
   scale_fill_continuous(type = "viridis") +
   theme_bw() +
-  labs(title = "Top 20 Hallmark Pathways (fgsea)")
+  labs(
+    title = "Top 20 Hallmark Pathways (fgsea)"
+  )
 
-ggsave("gsea_barplot.png", p_gsea, width = 8, height = 6, dpi = 300)
+ggsave("gsea_barplot.png", 
+       p_gsea, 
+       width = 8, 
+       height = 6, 
+       dpi = 300)
 ```
-   v. Enrichment plot for the top pathway
-```
+v. Enrichment plot for the top pathway
+```r
 top_pathway <- fgsea_res$pathway[1]
 
 png("fgsea_top_pathway.png", width = 2000, height = 1200, res = 300)
@@ -642,8 +674,8 @@ plotEnrichment(pathways_hallmark[[top_pathway]], gene_ranks) +
   ggtitle(paste("Top Enriched Pathway:", top_pathway))
 dev.off()
 ```
-  vi. Barplot of top enriched pathways
-```
+vi. Barplot of top enriched pathways
+```r
 library(ggplot2)
 
 top20 <- fgsea_res[1:20, ]
@@ -662,12 +694,12 @@ ggplot(top20, aes(x = reorder(pathway, NES), y = NES, fill = padj)) +
   theme_bw(base_size = 14)
 dev.off()
 ```
-  vii. Leading edge enrichment plot
-  ```
+vii. Leading edge enrichment plot
+ ```r
 top_pathway <- fgsea_res$pathway[1]
 top_pathway
 ```
-```
+```r
 png("fgsea_leading_edge.png", width = 2000, height = 1400, res = 300)
 plotEnrichment(
   pathways_hallmark[[top_pathway]],
@@ -676,43 +708,46 @@ plotEnrichment(
   ggtitle(paste("Leading Edge Plot for:", top_pathway))
 dev.off()
 ```
+
 **12. MA Plot for LNCAP contrast:**
-```
-png("MAplot_LNCAP.png", width=2000, height=1600, res=300)
-plotMA(res_LNCAP, ylim=c(-5,5), cex=0.6)
+```r
+png("MAplot_LNCAP.png", width = 2000, height = 1600, res = 300)
+plotMA(res_LNCAP, ylim = c(-5, 5), cex = 0.6)
 dev.off()
 ```
 **13. Heatmap of Top 30 Genes With Highest Absolute LFC:**
+```r
+# Order by absolute log2FC
+top_genes_LFC <- rownames(res_LNCAP_ordered)[
+  order(abs(res_LNCAP_ordered$log2FoldChange), decreasing = TRUE)
+][1:30]
 ```
-#Order by absolute log2FC
-top_genes_LFC <- rownames(res_LNCAP_ordered)[order(abs(res_LNCAP_ordered$log2FoldChange), decreasing = TRUE)][1:30]
-```
-```
+```r
 mat <- assay(vsd)[top_genes_LFC, ]
 mat <- mat - rowMeans(mat)   # standard scaling
 ```
-```
+```r
 library(pheatmap)
 
-png("Top30_LFC_heatmap.png", width=2000, height=1600, res=300)
+png("Top30_LFC_heatmap.png", width = 2000, height = 1600, res = 300)
 pheatmap(
-    mat,
-    annotation_col = as.data.frame(colData(dds)["condition"]),
-    fontsize_row = 6,
-    scale = "row",
-    clustering_distance_rows = "euclidean",
-    clustering_distance_cols = "euclidean"
+  mat,
+  annotation_col = as.data.frame(colData(dds)["condition"]),
+  fontsize_row = 6,
+  scale = "row",
+  clustering_distance_rows = "euclidean",
+  clustering_distance_cols = "euclidean"
 )
 dev.off()
 ```
 **14. Creating boxplots:**
-```
-#extract normalized counts
+```r
+# extract normalized counts
 df_counts <- plotCounts(dds, gene = gene_id, returnData = TRUE)
 
 library(ggplot2)
 
-png("boxplot_IGFBP1_ggplot.png", width=1600, height=1200, res=300)
+png("boxplot_IGFBP1_ggplot.png", width = 1600, height = 1200, res = 300)
 
 ggplot(df_counts, aes(x = condition, y = count, fill = condition)) +
   geom_boxplot(outlier.shape = NA) +
@@ -723,13 +758,13 @@ ggplot(df_counts, aes(x = condition, y = count, fill = condition)) +
 
 dev.off()
 ```
-15. Heatmap — Top 30 Most Variable Genes
+**15. Heatmap — Top 30 Most Variable Genes**
     -used on mostly all RNA-seq QC pipelines
-```
-#variance for each gene
+```r
+# variance for each gene
 gene_variances <- apply(assay(vsd), 1, var)
 
-#Select top 30 most variable genes
+# Select top 30 most variable genes
 top30 <- names(sort(gene_variances, decreasing = TRUE))[1:30]
 
 mat_topvar <- assay(vsd)[top30, ]
@@ -738,26 +773,28 @@ mat_topvar <- mat_topvar - rowMeans(mat_topvar)  # center rows
 annotation_col <- data.frame(Condition = vsd$condition)
 rownames(annotation_col) <- colnames(mat_topvar)
 
-png("top30_variable_genes_heatmap.png", width=2000, height=1600, res=300)
-pheatmap(mat_topvar,
-         annotation_col = annotation_col,
-         scale = "row",
-         show_rownames = TRUE,
-         fontsize_row = 8,
-         fontsize_col = 10,
-         main = "Top 30 Most Variable Genes")
+png("top30_variable_genes_heatmap.png", width = 2000, height = 1600, res = 300)
+pheatmap(
+  mat_topvar,
+  annotation_col = annotation_col,
+  scale = "row",
+  show_rownames = TRUE,
+  fontsize_row = 8,
+  fontsize_col = 10,
+  main = "Top 30 Most Variable Genes"
+)
 dev.off()
 ```
 Heatmap for Top 30 DE Genes (LFC-based):
-```
-#Clean DE results
+```r
+# Clean DE results
 res_clean <- res_lncap[!is.na(res_lncap$log2FoldChange), ]
 res_clean <- res_clean[order(abs(res_clean$log2FoldChange), decreasing = TRUE), ]
 
-#Top 30 DE genes
+# Top 30 DE genes
 top_genes_LFC <- rownames(res_clean)[1:30]
 
-#Extract only genes present in VSD matrix
+# Extract only genes present in VSD matrix
 top_genes_LFC <- top_genes_LFC[top_genes_LFC %in% rownames(vsd)]
 
 mat_lfc <- assay(vsd)[top_genes_LFC, ]
@@ -766,39 +803,47 @@ mat_lfc <- mat_lfc - rowMeans(mat_lfc)
 annotation_col <- data.frame(Condition = vsd$condition)
 rownames(annotation_col) <- colnames(mat_lfc)
 
-png("top30_DE_genes_heatmap.png", width=2000, height=1600, res=300)
-pheatmap(mat_lfc,
-         annotation_col = annotation_col,
-         scale = "row",
-         fontsize_row = 8,
-         fontsize_col = 10,
-         main = "Top 30 DE Genes by |LFC|")
+png("top30_DE_genes_heatmap.png", width = 2000, height = 1600, res = 300)
+pheatmap(
+  mat_lfc,
+  annotation_col = annotation_col,
+  scale = "row",
+  fontsize_row = 8,
+  fontsize_col = 10,
+  main = "Top 30 DE Genes by |LFC|"
+)
 dev.off()
 ```
 **16. Zero count distribution table:**
 Counts per gene = how many samples have zero counts. Saves a small summary table.
-```
-#Zero-count distribution
+```r
+# Zero-count distribution
 counts_mat <- as.matrix(assay(dds))   # or raw count matrix you used
 zero_counts <- rowSums(counts_mat == 0)
+
 zc_table <- as.data.frame(table(zero_counts))
 colnames(zc_table) <- c("zeros_in_samples", "gene_count")
-write.csv(zc_table, "zero_count_distribution.csv", row.names = FALSE)
+
+write.csv(
+  zc_table,
+  "zero_count_distribution.csv",
+  row.names = FALSE
+)
 
 summary(zero_counts)
 ```
 **17. QC figure: Density plots raw vst**
-```
-#Raw vs VST Density Plots (Grid View) 
+```r
+# Raw vs VST Density Plots (Grid View) 
 
 library(ggplot2)
 library(gridExtra)
 
-#Convert raw counts to data frame for density plotting
+# Convert raw counts to data frame for density plotting
 raw_df <- as.data.frame(assay(dds)[, ])
 vst_df <- as.data.frame(assay(vsd)[, ])
 
-#Function to create density plots for raw + VST
+# Function to create density plots for raw + VST
 make_density_plots <- function(sample_name) {
   df_raw <- data.frame(value = raw_df[[sample_name]])
   df_vst <- data.frame(value = vst_df[[sample_name]])
@@ -822,8 +867,8 @@ png("density_plots_raw_vst_grid.png", width = 4000, height = 4000, res = 300)
 grid.arrange(grobs = plots, ncol = 4)
 dev.off()
 ```
-**17. Second PCA plot (After DESeq normalization):**
-```
+**18. Second PCA plot (After DESeq normalization):**
+```r
 vsd2 <- vst(dds, blind = TRUE)
 
 plot_PCA2 <- function(vsd.obj) {
@@ -844,8 +889,8 @@ png("PCA_after_DESeq.png", width = 2000, height = 2000, res = 300)
 plot_PCA2(vsd2)
 dev.off()
 ```
-**18. Volcano plot on the DEGs (ordered DE results):**
-```
+**19. Volcano plot on the DEGs (ordered DE results):**
+```r
 res_df <- as.data.frame(reslncapOrdered)
 res_df <- na.omit(res_df)
 res_df$gene <- rownames(res_df)
@@ -875,15 +920,15 @@ png("Volcano_LNCAP_Ordered.png", width = 2000, height = 1600, res = 300)
 print(volcano2)
 dev.off()
 ```
-**19. Waterfall Plot:**
-```
+**20. Waterfall Plot:**
+```r
 library(ggplot2)
 library(stringr)
 
-#Wrap long labels to avoid clipping
+# Wrap long labels to avoid clipping
 top20$pathway_wrap <- str_wrap(top20$pathway_short, width = 25)
 
-#Save high-resolution, very wide PNG
+# Save high-resolution, very wide PNG
 png("hallmark_waterfall_final_full.png", width = 3800, height = 2400, res = 300)
 
 ggplot(top20, aes(x = reorder(pathway_wrap, NES), y = NES, fill = NES > 0)) +
@@ -907,6 +952,7 @@ ggplot(top20, aes(x = reorder(pathway_wrap, NES), y = NES, fill = NES > 0)) +
 
 dev.off()
 ```
+
 **ALL .PNG FILES (RESULTS) OF DESEQ2 ARE UPLOADED IN THE FILES SECTION.**
 
 # Conclusion:
