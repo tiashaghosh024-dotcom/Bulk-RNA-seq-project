@@ -360,7 +360,7 @@ BiocManager::install(c(
 Set working directory inside R.
 Load the data and packages:
 
-```
+```r
 setwd("~/projects/GSE106305")   #<- changed to my path
 
 library(DESeq2)
@@ -373,7 +373,6 @@ library(fgsea)
 library(DOSE)
 library(enrichplot)
 library(org.Hs.eg.db)
-
 ```
 
 **2. Verification and reading counts file:**
